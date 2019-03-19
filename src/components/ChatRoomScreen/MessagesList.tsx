@@ -63,9 +63,9 @@ const MessagesList = ({ messages }) => {
   return (
     <Container>
       {messages.map((message) => (
-        <MessageItem key={message.id}>
-          <Contents>{message.content}</Contents>
-          <Timestamp>{moment(message.createdAt).format('HH:mm')}</Timestamp>
+        <MessageItem data-testid="message-item" key={message.id}>
+          <Contents data-testid="message-content">{message.content}</Contents>
+          <Timestamp data-testid="message-date">{moment(message.createdAt).format('HH:mm')}</Timestamp>
         </MessageItem>
       ))}
     </Container>

@@ -66,6 +66,7 @@ const MessageInput = ({ onSendMessage }) => {
   return (
     <Container>
       <ActualInput
+        data-testid="message-input"
         type="text"
         placeholder="Type a message"
         value={message}
@@ -73,6 +74,7 @@ const MessageInput = ({ onSendMessage }) => {
         onChange={onChange}
       />
       <SendButton
+        data-testid="send-button"
         variant="contained"
         color="primary"
         onClick={submitMessage}

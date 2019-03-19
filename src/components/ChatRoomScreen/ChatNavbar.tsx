@@ -28,7 +28,7 @@ const Picture = styled.img `
   border-radius: 50%;
 `
 
-const Title = styled.div `
+const Name = styled.div `
   line-height: 56px;
 `
 
@@ -39,11 +39,11 @@ const ChatNavbar = ({ chat, history }) => {
 
   return (
     <Style className={name}>
-      <BackButton onClick={navBack}>
+      <BackButton data-testid="back-button" onClick={navBack}>
         <ArrowBackIcon />
       </BackButton>
-      <Picture src={chat.picture} />
-      <Title>{chat.name}</Title>
+      <Picture data-testid="chat-picture" src={chat.picture} />
+      <Name data-testid="chat-name">{chat.name}</Name>
     </Style>
   )
 }
