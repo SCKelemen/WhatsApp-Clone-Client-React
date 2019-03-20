@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import ChatNavbar from './ChatNavbar'
 import MessageInput from './MessageInput'
@@ -46,13 +46,26 @@ const ChatRoomScreen = ({ history, match }) => {
     setChat(chat)
   }, [true])
 
+  const onSendMessage = useCallback((content) => {
+    const message = {
+      id: chat.messages.length + 1,
+      createdAt: Date.now(),
+      content,
+    }
+
+    setChat({
+      ...chat,
+      messages: chat.messages.concat(message),
+    })
+  }, [chat])
+
   if (!chat) return null
 
   return (
     <Container>
       <ChatNavbar chat={chat} history={history} />
       <MessagesList messages={chat.messages} />
-      <MessageInput />
+      <MessageInput onSendMessage={onSendMessage} />
     </Container>
   )
 }
