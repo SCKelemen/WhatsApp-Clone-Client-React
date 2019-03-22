@@ -1,5 +1,7 @@
+import gql from 'graphql-tag'
 import * as React from 'react'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback } from 'react'
+import { useApolloClient, useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import ChatNavbar from './ChatNavbar'
 import MessageInput from './MessageInput'
@@ -12,7 +14,7 @@ const Container = styled.div `
   height: 100vh;
 `
 
-const getChatQuery = `
+const getChatQuery = gql `
   query GetChat($chatId: ID!) {
     chat(chatId: $chatId) {
       id
@@ -29,22 +31,10 @@ const getChatQuery = `
 
 const ChatRoomScreen = ({ history, match }) => {
   const { params: { chatId } } = match
-  const [chat, setChat] = useState(null)
-
-  useMemo(async () => {
-    const body = await fetch(`${process.env.REACT_APP_SERVER_URL}/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: getChatQuery,
-        variables: { chatId },
-      }),
-    })
-    const { data: { chat } } = await body.json()
-    setChat(chat)
-  }, [true])
+  const client = useApolloClient()
+  const { data: { chat } } = useQuery(getChatQuery, {
+    variables: { chatId }
+  })
 
   const onSendMessage = useCallback((content) => {
     const message = {
@@ -53,9 +43,15 @@ const ChatRoomScreen = ({ history, match }) => {
       content,
     }
 
-    setChat({
-      ...chat,
-      messages: chat.messages.concat(message),
+    client.writeQuery({
+      query: getChatQuery,
+      variables: { chatId },
+      data: {
+        chat: {
+          ...chat,
+          messages: chat.messages.concat(message),
+        },
+      },
     })
   }, [chat])
 

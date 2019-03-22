@@ -1,7 +1,9 @@
 import { List, ListItem } from '@material-ui/core'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import * as React from 'react'
-import { useCallback, useState, useMemo } from 'react'
+import { useCallback } from 'react'
+import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 
 const Container = styled.div `
@@ -55,7 +57,7 @@ const MessageDate = styled.div `
   font-size: 13px;
 `
 
-const getChatsQuery = `
+const getChatsQuery = gql `
   query GetChats {
     chats {
       id
@@ -71,19 +73,7 @@ const getChatsQuery = `
 `
 
 const ChatsList = ({ history }) => {
-  const [chats, setChats] = useState([])
-
-  useMemo(async () => {
-    const body = await fetch(`${process.env.REACT_APP_SERVER_URL}/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query: getChatsQuery }),
-    })
-    const { data: { chats } } = await body.json()
-    setChats(chats)
-  }, [true])
+  const { data: { chats = [] } } = useQuery(getChatsQuery)
 
   const navToChat = useCallback((chat) => {
     history.push(`chats/${chat.id}`)
