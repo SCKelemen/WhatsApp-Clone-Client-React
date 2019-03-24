@@ -5,6 +5,7 @@ import * as React from 'react'
 import { useCallback } from 'react'
 import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
+import * as queries from '../../graphql/queries'
 
 const Container = styled.div `
   height: calc(100% - 56px);
@@ -57,23 +58,8 @@ const MessageDate = styled.div `
   font-size: 13px;
 `
 
-export const getChatsQuery = gql `
-  query GetChats {
-    chats {
-      id
-      name
-      picture
-      lastMessage {
-        id
-        content
-        createdAt
-      }
-    }
-  }
-`
-
 const ChatsList = ({ history }) => {
-  const { data: { chats = [] } } = useQuery(getChatsQuery)
+  const { data: { chats = [] } } = useQuery(queries.chats)
 
   const navToChat = useCallback((chat) => {
     history.push(`chats/${chat.id}`)
