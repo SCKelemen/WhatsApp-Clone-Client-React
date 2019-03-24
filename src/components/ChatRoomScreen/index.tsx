@@ -1,3 +1,4 @@
+import { defaultDataIdFromObject } from 'apollo-cache-inmemory'
 import gql from 'graphql-tag'
 import * as React from 'react'
 import { useCallback } from 'react'
@@ -6,7 +7,6 @@ import styled from 'styled-components'
 import ChatNavbar from './ChatNavbar'
 import MessageInput from './MessageInput'
 import MessagesList from './MessagesList'
-import * as queries from '../../graphql/queries'
 import * as fragments from '../../graphql/fragments'
 
 const Container = styled.div `
@@ -55,41 +55,28 @@ const ChatRoomScreen = ({ history, match }) => {
         }
       },
       update: (client, { data: { addMessage } }) => {
-        client.writeQuery({
-          query: getChatQuery,
-          variables: { chatId },
-          data: {
-            chat: {
-              ...chat,
-              messages: chat.messages.concat(addMessage),
-            },
-          },
-        })
-
-        rewriteChats:
-        {
-          let data
-          try {
-            data = client.readQuery({
-              query: queries.chats,
-            })
-          } catch (e) {
-            break rewriteChats
-          }
-
-          if (!data) {
-            break rewriteChats
-          }
-
-          const chats = data.chats
-          const chat = chats.find(c => c.id === chatId)
-          chat.lastMessage = addMessage
-
-          client.writeQuery({
-            query: queries.chats,
-            data: { chats: chats },
+        let fullChat
+        try {
+          fullChat = client.readFragment({
+            id: defaultDataIdFromObject(chat),
+            fragment: fragments.fullChat,
+            fragmentName: 'FullChat',
           })
+        } catch (e) {
+          return
         }
+
+        if (!fullChat) return
+
+        fullChat.messages.push(addMessage)
+        fullChat.lastMessage = addMessage
+
+        client.writeFragment({
+          id: defaultDataIdFromObject(chat),
+          fragment: fragments.fullChat,
+          fragmentName: 'FullChat',
+          data: fullChat,
+        })
       },
     })
   }, [chat])
