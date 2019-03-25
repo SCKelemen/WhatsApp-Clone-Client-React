@@ -3,9 +3,8 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import * as React from 'react'
 import { useCallback } from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
-import * as queries from '../../graphql/queries'
+import { useChatsQuery } from '../../graphql/types'
 
 const Container = styled.div `
   height: calc(100% - 56px);
@@ -59,7 +58,7 @@ const MessageDate = styled.div `
 `
 
 const ChatsList = ({ history }) => {
-  const { data: { chats = [] } } = useQuery(queries.chats)
+  const { data: { chats = [] } } = useChatsQuery()
 
   const navToChat = useCallback((chat) => {
     history.push(`chats/${chat.id}`)

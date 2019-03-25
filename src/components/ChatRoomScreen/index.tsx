@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import ChatNavbar from './ChatNavbar'
 import MessageInput from './MessageInput'
 import MessagesList from './MessagesList'
+import { useGetChatQuery, useAddMessageMutation } from '../../graphql/types'
 import * as fragments from '../../graphql/fragments'
 
 const Container = styled.div `
@@ -37,10 +38,10 @@ const addMessageMutation = gql `
 const ChatRoomScreen = ({ history, match }) => {
   const { params: { chatId } } = match
   const client = useApolloClient()
-  const { data: { chat } } = useQuery(getChatQuery, {
+  const { data: { chat } } = useGetChatQuery({
     variables: { chatId }
   })
-  const addMessage = useMutation(addMessageMutation)
+  const addMessage = useAddMessageMutation()
 
   const onSendMessage = useCallback((content) => {
     addMessage({
