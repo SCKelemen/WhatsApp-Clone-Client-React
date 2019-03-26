@@ -9,6 +9,7 @@ import MessageInput from './MessageInput'
 import MessagesList from './MessagesList'
 import { useGetChatQuery, useAddMessageMutation } from '../../graphql/types'
 import * as fragments from '../../graphql/fragments'
+import { writeMessage } from '../../services/cache.service'
 
 const Container = styled.div `
   background: url(/assets/chat-background.jpg);
@@ -56,28 +57,7 @@ const ChatRoomScreen = ({ history, match }) => {
         }
       },
       update: (client, { data: { addMessage } }) => {
-        let fullChat
-        try {
-          fullChat = client.readFragment({
-            id: defaultDataIdFromObject(chat),
-            fragment: fragments.fullChat,
-            fragmentName: 'FullChat',
-          })
-        } catch (e) {
-          return
-        }
-
-        if (!fullChat) return
-
-        fullChat.messages.push(addMessage)
-        fullChat.lastMessage = addMessage
-
-        client.writeFragment({
-          id: defaultDataIdFromObject(chat),
-          fragment: fragments.fullChat,
-          fragmentName: 'FullChat',
-          data: fullChat,
-        })
+        writeMessage(client, addMessage)
       },
     })
   }, [chat])
