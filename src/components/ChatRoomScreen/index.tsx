@@ -53,6 +53,7 @@ const ChatRoomScreen = ({ history, match }) => {
           __typename: 'Message',
           id: Math.random().toString(36).substr(2, 9),
           createdAt: new Date(),
+          chat: { id: chatId },
           content,
         }
       },
